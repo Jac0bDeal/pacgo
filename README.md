@@ -3,7 +3,7 @@
 Inspired by https://github.com/danicat/pacgo.
 
 ## Build
-This project is built on Go 1.14, so Go 1.14+ is recommended.
+This project is built on Go 1.15, so Go 1.15+ is recommended.
 Other than Go, the only other dependency required is Make.
 
 To do a clean build of the project, run

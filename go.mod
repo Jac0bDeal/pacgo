@@ -1,3 +1,3 @@
-module pacgo
+module github.com/Jac0bDeal/pacgo
 
-go 1.14
+go 1.15
