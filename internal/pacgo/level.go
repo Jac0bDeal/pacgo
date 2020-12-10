@@ -2,6 +2,7 @@ package pacgo
 
 import (
 	"bufio"
+	"math/rand"
 	"os"
 
 	"github.com/buger/goterm"
@@ -11,6 +12,7 @@ import (
 type level struct {
 	maze   []string
 	player *sprite
+	ghosts []*sprite
 }
 
 // loadLevel loads a level from the passed filepath.
@@ -33,8 +35,10 @@ func loadLevel(filepath string) (level, error) {
 	for row, line := range l.maze {
 		for col, char := range line {
 			switch char {
-			case 'P':
+			case playerChar:
 				l.player = &sprite{row, col}
+			case ghostChar:
+				l.ghosts = append(l.ghosts, &sprite{row, col})
 			}
 		}
 	}
@@ -68,7 +72,7 @@ func (l level) calculateMove(curRow, curCol int, dir command) (newRow, newCol in
 		}
 	}
 
-	if l.maze[newRow][newCol] == '#' {
+	if rune(l.maze[newRow][newCol]) == wallChar {
 		newRow = curRow
 		newCol = curCol
 	}
@@ -76,17 +80,24 @@ func (l level) calculateMove(curRow, curCol int, dir command) (newRow, newCol in
 	return
 }
 
-func (l level) movePlayer(dir command) {
+func (l level) MoveGhosts() {
+	for _, g := range l.ghosts {
+		dir := randomDirection()
+		g.row, g.col = l.calculateMove(g.row, g.col, dir)
+	}
+}
+
+func (l level) MovePlayer(dir command) {
 	l.player.row, l.player.col = l.calculateMove(l.player.row, l.player.col, dir)
 }
 
 // printScreen prints the level to StdOut.
-func (l level) printScreen() {
+func (l level) PrintScreen() {
 	clearScreen()
 	for _, line := range l.maze {
 		for _, char := range line {
 			switch char {
-			case '#':
+			case wallChar:
 				goterm.Printf("%c", char)
 			default:
 				goterm.Print(" ")
@@ -96,8 +107,26 @@ func (l level) printScreen() {
 	}
 
 	moveCursor(l.player.row, l.player.col)
-	goterm.Print("P")
-	moveCursor(len(l.maze)+1, 0)
+	goterm.Print(string(playerChar))
 
+	for _, g := range l.ghosts {
+		moveCursor(g.row, g.col)
+		goterm.Print(string(ghostChar))
+	}
+
+	moveCursor(len(l.maze)+1, 0)
 	goterm.Flush()
+}
+
+var dirLookupMap = map[int]command{
+	0: up,
+	1: down,
+	2: right,
+	3: left,
+}
+
+func randomDirection() command {
+	dir := rand.Intn(4)
+
+	return dirLookupMap[dir]
 }

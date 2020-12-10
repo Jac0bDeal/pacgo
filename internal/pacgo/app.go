@@ -45,7 +45,7 @@ func (a *App) Run() error {
 	goterm.Clear()
 	for {
 		// update screen
-		a.printScreen()
+		a.PrintScreen()
 
 		// process input
 		input, err := a.readInput()
@@ -53,7 +53,8 @@ func (a *App) Run() error {
 			return err
 		}
 
-		a.movePlayer(input)
+		a.MovePlayer(input)
+		a.MoveGhosts()
 
 		if input == esc {
 			log.Println("received terminate signal, shutting down...")

@@ -1,6 +1,7 @@
 package pacgo
 
 const (
+	ghostChar  rune = 'G'
 	playerChar rune = 'P'
 	wallChar   rune = '#'
 )
