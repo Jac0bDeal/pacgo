@@ -4,10 +4,18 @@ import (
 	"log"
 	"os"
 	"os/exec"
+
+	"github.com/buger/goterm"
 )
 
+type command string
+
 const (
-	Esc = "ESC"
+	esc   command = "ESC"
+	up    command = "UP"
+	down  command = "DOWN"
+	left  command = "LEFT"
+	right command = "Right"
 )
 
 // App contains the main logic and data structures used to run pacgo.
@@ -17,14 +25,13 @@ type App struct {
 
 // New constructs and returns an App from the passed parameters.
 func New(filepath string) (*App, error) {
-	level, err := loadLevel(filepath)
+	app := new(App)
+
+	l, err := loadLevel(filepath)
 	if err != nil {
 		return nil, err
 	}
-
-	app := &App{
-		level: level,
-	}
+	app.level = l
 
 	return app, nil
 }
@@ -35,6 +42,7 @@ func (a *App) Run() error {
 	a.initialize()
 	defer a.cleanup()
 
+	goterm.Clear()
 	for {
 		// update screen
 		a.printScreen()
@@ -45,7 +53,9 @@ func (a *App) Run() error {
 			return err
 		}
 
-		if input == Esc {
+		a.movePlayer(input)
+
+		if input == esc {
 			log.Println("received terminate signal, shutting down...")
 			break
 		}
@@ -76,7 +86,7 @@ func (*App) cleanup() {
 	}
 }
 
-func (*App) readInput() (string, error) {
+func (*App) readInput() (command, error) {
 	buffer := make([]byte, 100)
 
 	cnt, err := os.Stdin.Read(buffer)
@@ -85,7 +95,20 @@ func (*App) readInput() (string, error) {
 	}
 
 	if cnt == 1 && buffer[0] == 0x1b {
-		return Esc, nil
+		return esc, nil
+	} else if cnt >= 3 {
+		if buffer[0] == 0x1b && buffer[1] == '[' {
+			switch buffer[2] {
+			case 'A':
+				return up, nil
+			case 'B':
+				return down, nil
+			case 'C':
+				return right, nil
+			case 'D':
+				return left, nil
+			}
+		}
 	}
 
 	return "", nil

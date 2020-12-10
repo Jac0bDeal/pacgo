@@ -1,0 +1,6 @@
+github.com/buger/goterm v0.0.0-20200322175922-2f3e71b85129 h1:gfAMKE626QEuKG3si0pdTRcr/YEbBoxY+3GOH3gWvl4=
+github.com/buger/goterm v0.0.0-20200322175922-2f3e71b85129/go.mod h1:u9UyCz2eTrSGy6fbupqJ54eY5c4IC8gREQ1053dK12U=
+github.com/danicat/simpleansi v0.0.0-20200320095209-8cd0472eec8b h1:FzYaOg7IzCXIb6dXTpbL/cwchsRL+tuxdJs+Lq19f7Y=
+github.com/danicat/simpleansi v0.0.0-20200320095209-8cd0472eec8b/go.mod h1:HbVZkvczHfwZ2eR1JmwGahoaW1Bcda6zrK+bw/JqpYU=
+golang.org/x/sys v0.0.0-20201207223542-d4d67f95c62d h1:MiWWjyhUzZ+jvhZvloX6ZrUsdEghn8a64Upd8EMHglE=
+golang.org/x/sys v0.0.0-20201207223542-d4d67f95c62d/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
