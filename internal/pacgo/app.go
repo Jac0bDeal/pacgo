@@ -20,7 +20,7 @@ const (
 
 // App contains the main logic and data structures used to run pacgo.
 type App struct {
-	level
+	*level
 }
 
 // New constructs and returns an App from the passed parameters.
@@ -56,8 +56,20 @@ func (a *App) Run() error {
 		a.MovePlayer(input)
 		a.MoveGhosts()
 
-		if input == esc {
-			log.Println("received terminate signal, shutting down...")
+		// process collisions
+		for _, g := range a.ghosts {
+			if *a.player == *g {
+				a.lives = 0
+			}
+		}
+
+		// check game over or quit
+		if input == esc || a.numDots == 0 || a.lives <= 0 {
+			clearScreen()
+
+			goterm.Println("Game Over!                   ")
+			goterm.Println("Score: ", a.score, "                    ")
+			goterm.Flush()
 			break
 		}
 	}

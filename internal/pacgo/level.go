@@ -8,22 +8,39 @@ import (
 	"github.com/buger/goterm"
 )
 
+const (
+	ghostChar  rune = 'G'
+	playerChar rune = 'P'
+	wallChar   rune = '#'
+	dotChar    rune = '.'
+)
+
+type sprite struct {
+	row int
+	col int
+}
+
 // level represents a pacgo game level.
 type level struct {
-	maze   []string
-	player *sprite
-	ghosts []*sprite
+	maze    []string
+	player  *sprite
+	ghosts  []*sprite
+	score   int
+	numDots int
+	lives   int
 }
 
 // loadLevel loads a level from the passed filepath.
-func loadLevel(filepath string) (level, error) {
+func loadLevel(filepath string) (*level, error) {
 	file, err := os.Open(filepath)
 	if err != nil {
-		return level{}, err
+		return nil, err
 	}
 	defer file.Close()
 
-	l := level{}
+	l := &level{
+		lives: 1,
+	}
 	var maze []string
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
@@ -39,6 +56,8 @@ func loadLevel(filepath string) (level, error) {
 				l.player = &sprite{row, col}
 			case ghostChar:
 				l.ghosts = append(l.ghosts, &sprite{row, col})
+			case dotChar:
+				l.numDots++
 			}
 		}
 	}
@@ -46,7 +65,7 @@ func loadLevel(filepath string) (level, error) {
 	return l, nil
 }
 
-func (l level) calculateMove(curRow, curCol int, dir command) (newRow, newCol int) {
+func (l *level) calculateMove(curRow, curCol int, dir command) (newRow, newCol int) {
 	newRow, newCol = curRow, curCol
 
 	switch dir {
@@ -80,24 +99,34 @@ func (l level) calculateMove(curRow, curCol int, dir command) (newRow, newCol in
 	return
 }
 
-func (l level) MoveGhosts() {
+func (l *level) MoveGhosts() {
 	for _, g := range l.ghosts {
 		dir := randomDirection()
 		g.row, g.col = l.calculateMove(g.row, g.col, dir)
 	}
 }
 
-func (l level) MovePlayer(dir command) {
+func (l *level) MovePlayer(dir command) {
 	l.player.row, l.player.col = l.calculateMove(l.player.row, l.player.col, dir)
+
+	switch rune(l.maze[l.player.row][l.player.col]) {
+	case dotChar:
+		l.numDots--
+		l.score++
+
+		l.maze[l.player.row] = l.maze[l.player.row][0:l.player.col] + " " + l.maze[l.player.row][l.player.col+1:]
+	}
 }
 
 // printScreen prints the level to StdOut.
-func (l level) PrintScreen() {
+func (l *level) PrintScreen() {
 	clearScreen()
 	for _, line := range l.maze {
 		for _, char := range line {
 			switch char {
 			case wallChar:
+				fallthrough
+			case dotChar:
 				goterm.Printf("%c", char)
 			default:
 				goterm.Print(" ")
@@ -115,6 +144,7 @@ func (l level) PrintScreen() {
 	}
 
 	moveCursor(len(l.maze)+1, 0)
+	goterm.Println("Score: ", l.score, "\tLives: ", l.lives)
 	goterm.Flush()
 }
 

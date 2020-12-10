@@ -16,5 +16,4 @@ func main() {
 	if err != nil {
 		log.Fatalf("encountered error while running: %v", err)
 	}
-	log.Println("done")
 }
