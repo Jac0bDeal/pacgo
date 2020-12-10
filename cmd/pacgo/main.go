@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	app, err := pacgo.New("level.txt")
+	app, err := pacgo.New("configs/config-emoji.json", "levels/level-1.txt")
 	if err != nil {
 		log.Fatalf("failed to initialize app: %v", err)
 	}

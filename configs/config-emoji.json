@@ -1,0 +1,10 @@
+{
+  "player_sprite": "\uD83D\uDE0B",
+  "ghost_sprite": "\uD83D\uDC7B",
+  "wall_sprite": "\uD83C\uDF35",
+  "dot_sprite": "\uD83E\uDDC0",
+  "pill_sprite": "\uD83C\uDF79",
+  "death_sprite": "\uD83D\uDC80",
+  "space_sprite": "  ",
+  "use_emoji": true
+}

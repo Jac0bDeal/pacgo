@@ -4,15 +4,14 @@ import (
 	"bufio"
 	"math/rand"
 	"os"
-
-	"github.com/buger/goterm"
 )
 
 const (
-	ghostChar  rune = 'G'
-	playerChar rune = 'P'
-	wallChar   rune = '#'
-	dotChar    rune = '.'
+	dotChar     rune = '.'
+	ghostChar   rune = 'G'
+	playerChar  rune = 'P'
+	powerUpChar rune = 'X'
+	wallChar    rune = '#'
 )
 
 type sprite struct {
@@ -97,55 +96,6 @@ func (l *level) calculateMove(curRow, curCol int, dir command) (newRow, newCol i
 	}
 
 	return
-}
-
-func (l *level) MoveGhosts() {
-	for _, g := range l.ghosts {
-		dir := randomDirection()
-		g.row, g.col = l.calculateMove(g.row, g.col, dir)
-	}
-}
-
-func (l *level) MovePlayer(dir command) {
-	l.player.row, l.player.col = l.calculateMove(l.player.row, l.player.col, dir)
-
-	switch rune(l.maze[l.player.row][l.player.col]) {
-	case dotChar:
-		l.numDots--
-		l.score++
-
-		l.maze[l.player.row] = l.maze[l.player.row][0:l.player.col] + " " + l.maze[l.player.row][l.player.col+1:]
-	}
-}
-
-// printScreen prints the level to StdOut.
-func (l *level) PrintScreen() {
-	clearScreen()
-	for _, line := range l.maze {
-		for _, char := range line {
-			switch char {
-			case wallChar:
-				fallthrough
-			case dotChar:
-				goterm.Printf("%c", char)
-			default:
-				goterm.Print(" ")
-			}
-		}
-		goterm.Println()
-	}
-
-	moveCursor(l.player.row, l.player.col)
-	goterm.Print(string(playerChar))
-
-	for _, g := range l.ghosts {
-		moveCursor(g.row, g.col)
-		goterm.Print(string(ghostChar))
-	}
-
-	moveCursor(len(l.maze)+1, 0)
-	goterm.Println("Score: ", l.score, "\tLives: ", l.lives)
-	goterm.Flush()
 }
 
 var dirLookupMap = map[int]command{
